@@ -8,6 +8,9 @@ export let suitesConf = {
         ],
         search: [
             '../test/specs/search.test.js'
+        ],
+        checkout: [
+            '../test/specs/checkout.test.js'
         ]
     }
 }
