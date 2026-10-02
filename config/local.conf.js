@@ -4,7 +4,7 @@ export let localConf = {
     port: 4723,
     capabilities: process.env.PLATFORM === "android" ? [
         {
-            "platformName": 'Android',
+            platformName: 'Android',
             'appium:deviceName': 'ebac-qe',
             'appium:platformVersion': '11.0',
             'appium:automationName': 'UiAutomator2',
@@ -14,11 +14,11 @@ export let localConf = {
         }
     ] : [
         {
-            "platformName": "iOS",
-            "appium:deviceName": "iPhone 15",
-            "appium:platformVersion": "17.2",
-            "appium:automationName": "XCUITest",
-            "appium:app": `${process.cwd()}/app/LojaEBAC-sim.app`
+            platformName: 'iOS',
+            'appium:deviceName': process.env.IOS_DEVICE_NAME || 'iPhone 15',
+            'appium:platformVersion': process.env.IOS_PLATFORM_VERSION || '17.2',
+            'appium:automationName': 'XCUITest',
+            'appium:app': `${process.cwd()}/app/LojaEBAC-sim.app`
         }
     ],
     ...generalConf
