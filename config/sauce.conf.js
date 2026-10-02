@@ -8,11 +8,11 @@ export let sauceConf = {
     capabilities: process.env.PLATFORM === "android" ? [
         {
             platformName: 'Android',
-            'appium:app': 'storage:filename=ebacshop (1).aab', // The filename of the mobile app
+            'appium:app': 'storage:filename=ebacshop (1).aab',
             'appium:deviceName': 'Samsung.*',
             'appium:platformVersion': '10',
             'appium:automationName': 'UiAutomator2',
-            "appium:disableIdLocatorAutocompletion": true,
+            'appium:disableIdLocatorAutocompletion': true,
             'sauce:options': {
                 build: 'appium-build-teste-ebacshop-android',
                 name: 'Ebac Shop Teste',
@@ -22,13 +22,14 @@ export let sauceConf = {
         }
     ] : [
         {
-            'appium:app': 'storage:filename=LojaEBAC.ipa', // The filename of the mobile app
-            'appium:deviceName': 'iPhone.*',
-            'appium:platformVersion': '17',
+            platformName: 'iOS',
+            'appium:app': process.env.SAUCE_IOS_APP || 'storage:filename=LojaEBAC.ipa',
+            'appium:deviceName': process.env.IOS_DEVICE_NAME || 'iPhone.*',
+            'appium:platformVersion': process.env.IOS_PLATFORM_VERSION || '17',
             'appium:automationName': 'XCUITest',
             'sauce:options': {
-                build: 'appium-build-teste-ebacshop-ios',
-                name: 'Ebac Shop Teste',
+                build: process.env.SAUCE_BUILD || 'appium-build-ebacshop-ios',
+                name: 'EBAC Store iOS Checkout',
                 deviceOrientation: 'PORTRAIT',
                 appiumVersion: '2.0.0'
             },
