@@ -47,9 +47,14 @@ export const config = {
     }]],
     mochaOpts: { ui: 'bdd', timeout: 120000 },
     before: function (capabilities, specs, browser) {
+        // RDC job IDs differ from Appium session IDs.
+        const reportUrl = browser.capabilities.testobject_test_report_url
+        const jobId = browser.capabilities.testobject_test_id
+            || (reportUrl && new URL(reportUrl).pathname.split('/').filter(Boolean).at(-1))
+        if (!jobId) throw new Error('Sauce Labs não retornou o ID do job RDC')
         mkdirSync('artifacts/sessions', { recursive: true })
         writeFileSync(`artifacts/sessions/${browser.sessionId}.json`, JSON.stringify({
-            id: browser.sessionId, region, specs
+            id: String(jobId), sessionId: browser.sessionId, region, specs, reportUrl
         }, null, 2))
     },
     afterTest: async function () {
