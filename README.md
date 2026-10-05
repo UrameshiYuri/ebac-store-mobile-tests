@@ -49,7 +49,7 @@ Variables opcionais no mesmo menu:
 | `SAUCE_REGION` | `us-west-1`; também aceita `us-east-4` e `eu-central-1` |
 | `SAUCE_DEVICE` | `Samsung.*Galaxy.*` (alocação dinâmica) |
 | `SAUCE_PLATFORM_VERSION` | Sem restrição; selecione uma versão disponível na conta se necessário |
-| `SAUCE_APPIUM_VERSION` | `stable` |
+| `SAUCE_APPIUM_VERSION` | `appium2-2025-09` |
 
 ### Executar e entregar o vídeo
 
@@ -57,8 +57,8 @@ Variables opcionais no mesmo menu:
 2. Abra **Actions**, selecione a execução e acompanhe o job `android`.
 3. Se faltavam secrets, cadastre-os e use **Re-run all jobs** na execução que falhou.
 4. Ao terminar, baixe o artifact `sauce-evidence-<run_id>-<attempt>`.
-5. Extraia `videos/<session-id>.mp4` e envie esse vídeo junto com o link da execução
-   e o link da branch `ci`. A estrutura do ZIP também contém `sessions/` e, quando
+5. Extraia `artifacts/videos/<session-id>.mp4` e envie esse vídeo junto com o link da execução
+   e o link da branch `ci`. A estrutura do ZIP também contém `artifacts/sessions/` e, quando
    produzidos pelo teste, os resultados Allure.
 
 O workflow tem `workflow_dispatch`, mas o botão **Run workflow** só aparece quando

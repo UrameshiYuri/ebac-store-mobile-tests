@@ -31,7 +31,7 @@ export const config = {
         'sauce:options': {
             build: process.env.SAUCE_BUILD || `ebac-local-${Date.now()}`,
             name: 'EBAC Shop - login Android',
-            appiumVersion: process.env.SAUCE_APPIUM_VERSION || 'stable',
+            appiumVersion: process.env.SAUCE_APPIUM_VERSION || 'appium2-2025-09',
             recordVideo: true
         }
     }],
@@ -56,6 +56,7 @@ export const config = {
         await driver.takeScreenshot()
     },
     after: async function (result) {
+        if (!globalThis.driver?.sessionId || typeof driver.execute !== 'function') return
         await driver.execute(`sauce:job-result=${result === 0 ? 'passed' : 'failed'}`)
     }
 }

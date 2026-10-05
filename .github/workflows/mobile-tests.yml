@@ -22,7 +22,7 @@ jobs:
       SAUCE_REGION: ${{ vars.SAUCE_REGION || 'us-west-1' }}
       SAUCE_DEVICE: ${{ vars.SAUCE_DEVICE || 'Samsung.*Galaxy.*' }}
       SAUCE_PLATFORM_VERSION: ${{ vars.SAUCE_PLATFORM_VERSION }}
-      SAUCE_APPIUM_VERSION: ${{ vars.SAUCE_APPIUM_VERSION || 'stable' }}
+      SAUCE_APPIUM_VERSION: ${{ vars.SAUCE_APPIUM_VERSION || 'appium2-2025-09' }}
       SAUCE_BUILD: ebac-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
