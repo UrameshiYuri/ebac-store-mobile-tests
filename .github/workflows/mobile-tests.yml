@@ -1,0 +1,70 @@
+name: Mobile tests - Sauce Labs
+
+on:
+  push:
+    branches: [ci]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-sauce-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      SAUCE_REGION: ${{ vars.SAUCE_REGION || 'us-west-1' }}
+      SAUCE_DEVICE: ${{ vars.SAUCE_DEVICE || 'Samsung.*Galaxy.*' }}
+      SAUCE_PLATFORM_VERSION: ${{ vars.SAUCE_PLATFORM_VERSION }}
+      SAUCE_APPIUM_VERSION: ${{ vars.SAUCE_APPIUM_VERSION || 'stable' }}
+      SAUCE_BUILD: ebac-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar credenciais
+        shell: bash
+        run: |
+          test -n "$SAUCE_USERNAME" || { echo '::error::Cadastre o secret SAUCE_USERNAME'; exit 1; }
+          test -n "$SAUCE_ACCESS_KEY" || { echo '::error::Cadastre o secret SAUCE_ACCESS_KEY'; exit 1; }
+          case "$SAUCE_REGION" in
+            us-west-1|us-east-4|eu-central-1) ;;
+            *) echo '::error::SAUCE_REGION inválida'; exit 1 ;;
+          esac
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
+      - name: Enviar AAB ao Sauce Labs
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --connect-timeout 30 --max-time 180 \
+            --user "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" \
+            --form 'payload=@app/ebacshop.aab' \
+            --form 'name=ebacshop.aab' \
+            "https://api.$SAUCE_REGION.saucelabs.com/v1/storage/upload" \
+            --output "$RUNNER_TEMP/sauce-upload.json"
+          APP_ID=$(jq -er '.item.id | select(type == "string" and length > 0)' "$RUNNER_TEMP/sauce-upload.json")
+          echo "SAUCE_APP=storage:$APP_ID" >> "$GITHUB_ENV"
+      - name: Executar testes Android em dispositivo real
+        id: tests
+        run: npm test
+      - name: Baixar vídeos das sessões
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
+        run: python3 scripts/download-sauce-videos.py
+      - name: Publicar evidências
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/
+            allure-results/
+          if-no-files-found: warn
+          retention-days: 14
